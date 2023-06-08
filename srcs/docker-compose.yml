@@ -1,0 +1,64 @@
+version : "3"
+
+services:
+  mariadb:
+    container_name: mariadb
+    build :
+        context: ./requirements/mariadb/
+        args: 
+          - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+          - MYSQL_DATABASE=${MYSQL_DATABASE}
+          - MYSQL_USER=${MYSQL_USER}
+          - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+    image : mariadb
+    volumes:
+      - db_files:/var/lib/mysql/
+    env_file:
+      - .env
+    networks:
+      - Mynet
+    restart: always
+  wordpress:
+    container_name: wordpress
+    build:
+        context: ./requirements/wordpress/
+    image: wordpress
+    volumes:
+      - wp_files:/var/www/wordpress
+    networks:
+      - Mynet
+    env_file:
+      - .env
+    ports:
+      - "9000:9000"
+    depends_on:
+      - mariadb
+    restart: always
+  nginx:
+    container_name: nginx
+    build: ./requirements/nginx/
+    image: nginx
+    volumes:
+      - wp_files:/var/www/wordpress/
+    networks:
+      - Mynet
+    ports:
+      - "443:443"
+    depends_on:
+      - wordpress
+    restart: always
+volumes:
+  wp_files:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/ytijani/data/wp_files
+  db_files:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/ytijani/data/db_files
+networks:
+  Mynet:
