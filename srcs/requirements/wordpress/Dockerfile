@@ -17,7 +17,5 @@ COPY ./tools/script.sh script.sh
 COPY ./conf/www.conf  /etc/php/7.3/fpm/pool.d/www.conf
 RUN chmod +x script.sh
 
-EXPOSE 9000
-
 ENTRYPOINT ["sh", "./script.sh"]
 CMD ["php-fpm7.3", "-F", "-O"]

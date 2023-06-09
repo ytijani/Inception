@@ -17,7 +17,7 @@ services:
       - .env
     networks:
       - Mynet
-    restart: always
+    restart: on-failure
   wordpress:
     container_name: wordpress
     build:
@@ -29,11 +29,9 @@ services:
       - Mynet
     env_file:
       - .env
-    ports:
-      - "9000:9000"
     depends_on:
       - mariadb
-    restart: always
+    restart: on-failure
   nginx:
     container_name: nginx
     build: ./requirements/nginx/
@@ -46,7 +44,7 @@ services:
       - "443:443"
     depends_on:
       - wordpress
-    restart: always
+    restart: on-failure
 volumes:
   wp_files:
     driver: local
